@@ -39,6 +39,12 @@ public class PlayerController : MonoBehaviour {
 	private bool onPlatform;
 	public float onPlatformSpeedModifier;
 
+	public float wallSlideSpeedMax = 3;
+	private bool wallSliding;
+	public GameObject body;
+
+	public int extraJumps;
+
 	// Use this for initialization
 	void Start () {
 		myRigidbody = GetComponent<Rigidbody2D>();
@@ -51,12 +57,18 @@ public class PlayerController : MonoBehaviour {
 		activeMoveSpeed = moveSpeed;
 
 		canMove = true;
+		
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
 		isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+
+		if(isGrounded)
+		{
+			extraJumps = 1;
+		}
 
 		if(knockbackCounter <= 0 && canMove)
 		{
@@ -80,10 +92,12 @@ public class PlayerController : MonoBehaviour {
 				myRigidbody.velocity = new Vector3(0f, myRigidbody.velocity.y, 0f);
 			}
 
-			if(Input.GetButtonDown ("Jump") && isGrounded)
+			//if(Input.GetButtonDown ("Jump") && isGrounded)
+			if(Input.GetButtonDown ("Jump") && extraJumps > 0)
 			{
 				myRigidbody.velocity = new Vector3(myRigidbody.velocity.x, jumpSpeed, 0f);
 				jumpSound.Play();
+				extraJumps--;
 			}
 				
 		}
