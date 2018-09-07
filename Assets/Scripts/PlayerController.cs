@@ -37,15 +37,18 @@ public class PlayerController : MonoBehaviour
     public AudioSource jumpSound;
     public AudioSource hurtSound;
 
-    public bool onPlatform;
+    private bool onPlatform;
     public float onPlatformSpeedModifier;
-
-    public float wallSlideSpeedMax = 3;
-    public bool wallSliding;
-    public GameObject body;
 
     public int extraJumpsValue;
     public int extraJumps;
+
+    public float wallSlideSpeedMax = 3;
+    public bool wallSliding;
+    public float wallJumpLength;
+    private float wallJumpCounter;
+    public float wallJumpForce;
+    public float wallJumpSpeed;
 
     // Use this for initialization
     void Start()
@@ -68,14 +71,6 @@ public class PlayerController : MonoBehaviour
 
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 
-        if (wallSliding)
-        {
-            if (myRigidbody.velocity.y < -wallSlideSpeedMax)
-            {
-                myRigidbody.velocity = new Vector3(0, -wallSlideSpeedMax, 0f);
-            }
-        }
-
         if (isGrounded)
         {
             if (myRigidbody.velocity.y == 0)
@@ -92,6 +87,17 @@ public class PlayerController : MonoBehaviour
             else
             {
                 activeMoveSpeed = moveSpeed;
+            }
+
+            if (Input.GetAxisRaw("Horizontal") > 0f || Input.GetAxisRaw("Horizontal") < 0f)
+            {
+                if (wallSliding)
+                {
+                    if (myRigidbody.velocity.y < -wallSlideSpeedMax)
+                    {
+                        myRigidbody.velocity = new Vector3(0, -wallSlideSpeedMax, 0f);
+                    }
+                }
             }
 
             if (Input.GetAxisRaw("Horizontal") > 0f)
@@ -113,10 +119,32 @@ public class PlayerController : MonoBehaviour
             if (Input.GetButtonDown("Jump") && extraJumps > 0)
             {
                 extraJumps--;
-                myRigidbody.velocity = new Vector3(myRigidbody.velocity.x, jumpSpeed, 0f);
                 jumpSound.Play();
+
+                if (wallSliding)
+                {
+                    WallJump();
+                }
+                else
+                {
+                    myRigidbody.velocity = new Vector3(myRigidbody.velocity.x, jumpSpeed, 0f);
+                }
             }
 
+        }
+
+        if (wallJumpCounter > 0)
+        {
+            wallJumpCounter -= Time.deltaTime;
+
+            if (transform.localScale.x > 0)
+            {
+                myRigidbody.velocity = new Vector3(-wallJumpForce, wallJumpSpeed, 0f);
+            }
+            else
+            {
+                myRigidbody.velocity = new Vector3(wallJumpForce, wallJumpSpeed, 0f);
+            }
         }
 
         if (knockbackCounter > 0)
@@ -161,6 +189,11 @@ public class PlayerController : MonoBehaviour
         knockbackCounter = knockbackLength;
         invincibilityCounter = invincibilityLength;
         theLevelManager.invincible = true;
+    }
+
+    void WallJump()
+    {
+        wallJumpCounter = wallJumpLength;
     }
 
 
