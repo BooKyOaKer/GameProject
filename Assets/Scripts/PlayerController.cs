@@ -37,11 +37,11 @@ public class PlayerController : MonoBehaviour
     public AudioSource jumpSound;
     public AudioSource hurtSound;
 
-    private bool onPlatform;
+    public bool onPlatform;
     public float onPlatformSpeedModifier;
 
     public float wallSlideSpeedMax = 3;
-    private bool wallSliding;
+    public bool wallSliding;
     public GameObject body;
 
     public int extraJumpsValue;
@@ -60,7 +60,6 @@ public class PlayerController : MonoBehaviour
         activeMoveSpeed = moveSpeed;
 
         canMove = true;
-
     }
 
     // Update is called once per frame
@@ -68,6 +67,14 @@ public class PlayerController : MonoBehaviour
     {
 
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+
+        if (wallSliding)
+        {
+            if (myRigidbody.velocity.y < -wallSlideSpeedMax)
+            {
+                myRigidbody.velocity = new Vector3(0, -wallSlideSpeedMax, 0f);
+            }
+        }
 
         if (isGrounded)
         {
@@ -181,6 +188,12 @@ public class PlayerController : MonoBehaviour
             transform.parent = other.transform;
             onPlatform = true;
         }
+
+        if (other.gameObject.tag == "Wall")
+        {
+            wallSliding = true;
+            extraJumps = 1;
+        }
     }
 
     void OnCollisionExit2D(Collision2D other)
@@ -189,6 +202,11 @@ public class PlayerController : MonoBehaviour
         {
             transform.parent = null;
             onPlatform = false;
+        }
+
+        if (other.gameObject.tag == "Wall")
+        {
+            wallSliding = false;
         }
     }
 }
