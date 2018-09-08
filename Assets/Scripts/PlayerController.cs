@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
     public float onPlatformSpeedModifier;
 
     public int extraJumpsValue;
-    public int extraJumps;
+    private int extraJumps;
 
     public float wallSlideSpeedMax = 3;
     public bool wallSliding;
