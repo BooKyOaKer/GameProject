@@ -225,6 +225,14 @@ public class PlayerController : MonoBehaviour
             form = 1;
         }
         myAnim.SetInteger("Form", form);
+        if (form == 2)
+        {
+            extraJumpsValue = 5;
+        }
+        else
+        {
+            extraJumpsValue = 2;
+        }
     }
 
 
