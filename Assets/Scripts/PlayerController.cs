@@ -50,6 +50,11 @@ public class PlayerController : MonoBehaviour
     public float wallJumpForce;
     public float wallJumpSpeed;
 
+    public int form;
+    public int allFormLenght;
+    public float formLength;
+    public float formCounter;
+
     // Use this for initialization
     void Start()
     {
@@ -63,6 +68,8 @@ public class PlayerController : MonoBehaviour
         activeMoveSpeed = moveSpeed;
 
         canMove = true;
+
+        form = 1;
     }
 
     // Update is called once per frame
@@ -182,6 +189,19 @@ public class PlayerController : MonoBehaviour
         {
             stompBox.SetActive(false);
         }
+
+        if (Input.GetKey(KeyCode.E))
+        {
+            if (formCounter <= 0)
+            {
+                ChangeForm();
+            }
+        }
+
+        if (formCounter > 0)
+        {
+            formCounter -= Time.deltaTime;
+        }
     }
 
     public void Knockback()
@@ -194,6 +214,17 @@ public class PlayerController : MonoBehaviour
     void WallJump()
     {
         wallJumpCounter = wallJumpLength;
+    }
+
+    void ChangeForm()
+    {
+        formCounter = formLength;
+        form++;
+        if (form > allFormLenght)
+        {
+            form = 1;
+        }
+        myAnim.SetInteger("Form", form);
     }
 
 
